@@ -17,13 +17,28 @@ const GithubProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState({ show: false, msg: "" });
+
+  const searchGithubUser = async (user) => {
+    toggleError();
+    setLoading(true);
+    const response = await axios(`${rootUrl}/users/${user}`).catch((err) =>
+      console.log(err)
+    );
+    console.log(response);
+    if (response) {
+      setGithubUser(response.data);
+    } else {
+      toggleError(true, "There is no user with the given username");
+    }
+    checkRequests();
+    setLoading(false);
+  };
   const checkRequests = () => {
     axios(`${rootUrl}/rate_limit`)
       .then(({ data }) => {
         let {
           rate: { remaining },
         } = data;
-        console.log(remaining);
         setRequest(remaining);
         if (remaining === 0) {
           toggleError(true, "Sorry, you've exceeded your hourly limit");
@@ -39,7 +54,15 @@ const GithubProvider = ({ children }) => {
   useEffect(checkRequests, []);
   return (
     <GithubContext.Provider
-      value={{ githubUser, repos, followers, request, error }}
+      value={{
+        githubUser,
+        repos,
+        followers,
+        request,
+        error,
+        searchGithubUser,
+        loading,
+      }}
     >
       {children}
     </GithubContext.Provider>

@@ -3,11 +3,13 @@ import styled from "styled-components";
 import { MdSearch } from "react-icons/md";
 import { GithubContext } from "../context/context";
 const Search = () => {
-  const { request, error } = useContext(GithubContext);
+  const { request, error, searchGithubUser, loading } =
+    useContext(GithubContext);
   const [user, setUser] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
     if (user) {
+      searchGithubUser(user);
     }
   };
   const handleChange = (e) => {
@@ -30,7 +32,7 @@ const Search = () => {
               value={user}
               placeholder="Enter Github User"
             ></input>
-            {request > 0 && <button type="submit">Search</button>}
+            {request > 0 && !loading && <button type="submit">Search</button>}
           </div>
         </form>
         <h3> Requests: {request}/60</h3>
